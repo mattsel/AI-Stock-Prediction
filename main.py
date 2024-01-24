@@ -7,7 +7,6 @@ from sklearn.metrics import mean_squared_error
 from flask import Flask, render_template, request
 from flask_pymongo import PyMongo
 import matplotlib.pyplot as plt
-import json
 
 # Load environment variables from a .env file
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -21,11 +20,19 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Initialize PyMongo with your Flask application
 mongo = PyMongo(app)
-client = pymongo.MongoClient(app.config['MONGO_URI'])
-database = client.get_database()
+database = mongo.db['AI-Stock-Prediction']
 collection = database['Stock-Collection']
 
+# Function to fetch historical stock data for a given symbol from MongoDB
+def get_stock_data_from_mongodb(symbol):
+    # Connect to MongoDB and fetch data for the given symbol
+    query = {'Name': symbol}
+    stock_data = list(collection.find(query))
 
+    # Convert the data to a Pandas DataFrame
+    stock_df = pd.DataFrame(stock_data)
+
+    return stock_df
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -34,8 +41,8 @@ def index():
     if request.method == 'POST':
         selected_stock = request.form['stock_symbol']
 
-        # Filter data for the selected stock
-        stock_data = all_data[all_data['Name'] == selected_stock]
+        # Fetch historical stock data for the selected stock symbol from MongoDB
+        stock_data = get_stock_data_from_mongodb(selected_stock)
 
         # Set Date to Datetime and sort values
         stock_data['date'] = pd.to_datetime(stock_data['date'])
