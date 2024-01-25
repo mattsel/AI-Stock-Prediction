@@ -1,0 +1,72 @@
+body, html {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica', sans-serif;
+    overflow: hidden;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    background-color: #333333;
+    width: 100%;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+form {
+    margin-top: 120px;
+    text-align: left;
+    margin-left: 1vw;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    width: 300px;
+    border: 1px solid #666666;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #333333;
+    color: #ffffff;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.chart {
+    position: absolute;
+    top: 180px; 
+    right: 20px; 
+    width: 300px;
+    height: 100%;
+}
+.chart h2 {
+    margin-left: 34px;
+}
+.response {
+    text-align: center;
+    margin-top: -35px;
+    font: 20px;
+    line-height: 45px;
+    font-weight: 600;
+}
+.graph {
+    text-align: center;
+    padding-top: 130px;
+    margin: 0;
+}

@@ -87,7 +87,7 @@ def index():
 
         result_html = result_df.head().to_html()
 
-    return render_template('index.html', result_html=result_html, plot_div=plot_div)
+    return render_template('index.html', result_html=result_html, plot_div=plot_div, mse=mse, selected_stock=selected_stock)
 
 if __name__ == '__main__':
     app.run(debug=True)

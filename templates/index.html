@@ -3,27 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../static/styles.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>Stock Prediction</title>
 </head>
 <body>
-    <h1>Stock Prediction</h1>
-
+    <div class='navbar'>
+        <h1>AI Stock Predictions</h1>
+    </div>
+    <div class ='form'>
     <form method="post" action="/">
-        <label for="stock_symbol">Enter Stock Ticker Symbol:</label>
+        <label for="stock_symbol">Enter Ticker Symbol:</label>
         <input type="text" id="stock_symbol" name="stock_symbol" required>
         <button type="submit">Predict</button>
     </form>
+    </div>
 
+    <div class="chart">
     {% if result_html %}
         <h2>Prediction Result</h2>
         {{ result_html|safe }}
     {% endif %}
-    
-    <!-- Display Plotly plot -->
+    </div>
+    <div class="response">
+    {% if mse %}
+        <p>Thank you for trying AI Stock Prediction. <br>According to the following calculations, this AI produced a Mean Square Error is: {{mse|safe}}.<br>
+            This value represents the average squared difference between the predicted and actual values. 
+        </p>
+    {% endif %}
+    </div>
+
+    <div class="graph">
     {% if plot_div %}
-        <h2>Plotly Plot</h2>
+        <h2>Actual vs Predicted ({{selected_stock}})</h2>
         {{ plot_div|safe }}
     {% endif %}
+    </div>
 </body>
 </html>
