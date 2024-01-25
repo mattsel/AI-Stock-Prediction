@@ -1,12 +1,12 @@
 import os
 import pandas as pd
 from dotenv import load_dotenv
+from flask import Flask, render_template, request
+from flask_pymongo import PyMongo, MongoClient
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from flask import Flask, render_template, request
-from flask_pymongo import PyMongo
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Load environment variables from a .env file
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -18,25 +18,25 @@ app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 app.config['MONGO_URI_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-# Initialize PyMongo with your Flask application
+# Initialize PyMongo with Flask
 mongo = PyMongo(app)
-database = mongo.db['AI-Stock-Prediction']
-collection = database['Stock-Collection']
+
+# Create a MongoDB client
+client = MongoClient(app.config['MONGO_URI'])
+db = client.get_database('AI-Prediction-Database')
+collection = db['Stock-Collection']
 
 # Function to fetch historical stock data for a given symbol from MongoDB
 def get_stock_data_from_mongodb(symbol):
-    # Connect to MongoDB and fetch data for the given symbol
     query = {'Name': symbol}
     stock_data = list(collection.find(query))
-
-    # Convert the data to a Pandas DataFrame
     stock_df = pd.DataFrame(stock_data)
-
     return stock_df
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     result_html = None
+    plot_div = None
 
     if request.method == 'POST':
         selected_stock = request.form['stock_symbol']
@@ -81,19 +81,13 @@ def index():
         # Convert the numeric date values to datetime for visualization
         result_df['date'] = test_data['date'].values
 
-        # Plot the actual vs. predicted values with proper date formatting
-        plt.figure(figsize=(10, 6))
-        plt.plot(result_df['date'], result_df['Actual'], label='Actual')
-        plt.plot(result_df['date'], result_df['Predicted'], label='Predicted')
-        plt.title(f'Actual vs. Predicted Stock Prices for {selected_stock}')
-        plt.xlabel('date')
-        plt.ylabel('Stock Price')
-        plt.legend()
-        plt.show()
+        # Plot the actual vs. predicted values with Plotly
+        fig = px.line(result_df, x='date', y=['Actual', 'Predicted'], labels={'value': 'Stock Price'})
+        plot_div = fig.to_html(full_html=False)
 
         result_html = result_df.head().to_html()
 
-    return render_template('index.html', result_html=result_html)
+    return render_template('index.html', result_html=result_html, plot_div=plot_div)
 
 if __name__ == '__main__':
     app.run(debug=True)
