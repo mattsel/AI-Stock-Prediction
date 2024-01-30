@@ -1,43 +1,49 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../static/styles.css" rel="stylesheet">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
     <title>Stock Prediction</title>
 </head>
 <body>
     <div class='navbar'>
-        <h1>AI Stock Predictions</h1>
-    </div>
-    <div class ='form'>
-    <form method="post" action="/">
-        <label for="stock_symbol">Enter Ticker Symbol:</label>
-        <input type="text" id="stock_symbol" name="stock_symbol" required>
-        <button type="submit">Predict</button>
-    </form>
+        <a href="{{ url_for('index') }}">
+            <h1>AI Stock Predictions</h1>
+        </a>
     </div>
 
-    <div class="chart">
-    {% if result_html %}
-        <h2>Prediction Result</h2>
-        {{ result_html|safe }}
-    {% endif %}
-    </div>
     <div class="response">
-    {% if mse %}
-        <p>Thank you for trying AI Stock Prediction. <br>According to the following calculations, this AI produced a Mean Square Error is: {{mse|safe}}.<br>
-            This value represents the average squared difference between the predicted and actual values. 
-        </p>
-    {% endif %}
+        <p> This Flask web application fetches historical stock data from MongoDB, preprocesses it, 
+            and employs scikit-learn's linear regression to predict future stock prices. The linear 
+            regression model learns from historical data, establishing patterns between opening, high,
+            and low prices to predict closing prices. Results are visualized with Plotly, providing an 
+            interactive display of actual versus predicted values.</p>
     </div>
+    <div class='form'>
+        <form method="post" action="/">
+            <div class="form-group">
+                <label for="stock_symbol">Enter Ticker Symbol:</label>
+                <input type="text" id="stock_symbol" name="stock_symbol" required>
+            </div>
 
-    <div class="graph">
-    {% if plot_div %}
-        <h2>Actual vs Predicted ({{selected_stock}})</h2>
-        {{ plot_div|safe }}
-    {% endif %}
+            <div class="form-group">
+                <button type="submit">Predict</button>
+            </div>
+        </form>
+    </div>   
+
+    <div class="response2">
+        <p1>S&P 500:</p1>
+        <p>AAPL, MSFT, AMZN, GOOGL, GOOG, FB, TSLA, NVDA, JNJ, JPM, V, PG, 
+            GS, KO, DIS, XOM, CSCO, INTC, ORCL, IBM, ADBE, PYPL, NFLX, AMD, CRM, AMGN, 
+            CAT, MRK, BAC, BA, CMCSA, VZ, PFE, WMT, HD, T, MCD, GE, NKE, KO, IBM, GM, ABBV,
+            HON, UBER, TMO, AVGO, QCOM, TXN, LMT, UNH, GILD, COST, MMM, XOM, COP, USB, TGT, AAL, 
+            AMAT, C, PEP, CVX, MS, DISCA, BKNG, SPG, LRCX, NOW, F, AIG, NEE, HCA, PNC, GM, AIG,
+             MU, FDX, ZTS, KHC, ADI, MU, VLO, ADP, SYF, LYB, CNC, RMD, IQV, AON, CTAS, BAX, ALXN, 
+             XLNX, MCK, BMY, ECL, CPRT, TROW, MSFT, STZ, GPN, FLT, NTAP, APA, RCL, ALGN, DXCM, TWTR, 
+             ANSS, OXY, COG, DLR, HST, MRO, BKR, APA, FTNT, ANET, CDW, CDNS, TFC, MXIM, KEYS, MKC, ED, 
+             BEN, CERN, ZBRA, DLR, VRSK, HIG, IDXX, NDAQ, SWK, BIIB, WDC, MOS, PEG, DVN, CPB, ROP, INFO, 
+             HES, HWM, EXR, AME, J, </p>
     </div>
 </body>
 </html>

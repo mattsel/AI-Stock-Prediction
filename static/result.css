@@ -4,6 +4,7 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: 'Helvetica', sans-serif;
+    overflow: hidden;
 }
 
 .navbar {
@@ -16,9 +17,8 @@ body, html {
     z-index: 100;
 }
 .navbar h1 {
-    margin-left: 15px;
+    margin-left: 20px;
 }
-
 .navbar a {
     text-decoration: none; 
     color: #ffffff; 
@@ -28,49 +28,26 @@ body, html {
     color: #ffffff;
 }
 
-.response, .response2 {
-    text-align: justify;
-    font-size: 18px;
-    line-height: 1.5;
-    background-color: #333333;
-    color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    margin: 120px auto 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.form-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.form {
-    width: 40%;
-    text-align: center;
-    margin-top: 20px;
-}
-
 form {
-    max-width: 400px;
-    width: 100%;
-    margin: 0 auto;
+    margin-top: 120px;
+    text-align: left;
+    margin-left: 1vw;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
+    display: block; 
+    margin-bottom: 5px; 
+    margin-left: 75px;
 }
 
 input {
     padding: 10px;
     margin: 5px;
-    width: calc(100% - 20px);
+    width: 300px;
     border: 1px solid #666666;
     border-radius: 5px;
     box-sizing: border-box;
@@ -85,8 +62,42 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 98px;
 }
 
 button:hover {
     background-color: #3c56fd98;
+}
+
+.chart {
+    position: absolute;
+    top: 110px; 
+    right: 20px; 
+    width: 300px;
+    height: 100%;
+}
+.chart h2 {
+    margin-left: 34px;
+}
+.response {
+    text-align: center;
+    margin-top: -110px;
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 400;
+    background-color: #333333;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.graph {
+    text-align: center;
+    margin-top: 40px;
+    width: 98%;
+    margin-left: auto;
+    margin-right: auto;
 }
