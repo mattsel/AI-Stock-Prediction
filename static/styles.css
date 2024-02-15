@@ -1,61 +1,76 @@
-body, html {
+body {
+    font-family: 'Helvetica', sans-serif;
     background-color: #1a1a1a;
     color: #ffffff;
     margin: 0;
     padding: 0;
-    font-family: 'Helvetica', sans-serif;
+    overflow: hidden;
 }
 
 .navbar {
-    position: fixed;
-    top: 0;
-    background-color: #333333;
     width: 100%;
     padding: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 100;
-}
-.navbar h1 {
-    margin-left: 15px;
+    top: 0;
+    background-color: #333;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
 }
 
 .navbar a {
-    text-decoration: none; 
-    color: #ffffff; 
+    text-decoration: none;
+    color: #fff;
+}
+.navbar a p {
+    text-decoration: underline;
+}
+
+.navbar h1 {
+    margin-left: 20px;
 }
 
 .navbar a:hover {
-    color: #ffffff;
+    color: #ccc;
+    text-decoration: underline;
 }
 
-.response, .response2 {
-    text-align: justify;
-    font-size: 18px;
-    line-height: 1.5;
-    background-color: #333333;
-    color: #ffffff;
+.navbar a:last-child {
+    margin-left: 1250px;
+
+}
+
+.response,
+.response2 {
+    max-width: 800px;
+    margin: 20px auto;
     padding: 20px;
     border-radius: 8px;
-    width: 80%;
-    margin: 120px auto 15px;
+    background-color: #333;
+    color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.form-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.form {
-    width: 40%;
     text-align: center;
-    margin-top: 20px;
+}
+
+.response2 {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.response2 b {
+    font-size: 20px;
+}
+p, p1 {
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 form {
     max-width: 400px;
     width: 100%;
     margin: 0 auto;
+    text-align: center;
+    background-color: #1a1a1a;
 }
 
 .form-group {
@@ -85,8 +100,9 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #3c56fd98;
+    background-color: #2a3bbf;
 }

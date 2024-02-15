@@ -6,37 +6,44 @@ body, html {
     font-family: 'Helvetica', sans-serif;
     overflow: hidden;
 }
-
 .navbar {
-    position: fixed;
-    top: 0;
-    background-color: #333333;
     width: 100%;
     padding: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 100;
+    top: 0;
+    background-color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
 }
+
+.navbar a {
+    text-decoration: none;
+    color: #fff;
+}
+.navbar a p {
+    text-decoration: underline;
+}
+
 .navbar h1 {
     margin-left: 20px;
 }
-.navbar a {
-    text-decoration: none; 
-    color: #ffffff; 
-}
 
 .navbar a:hover {
-    color: #ffffff;
+    color: #ccc;
+    text-decoration: underline;
+}
+
+.navbar a:last-child {
+    margin-left: 1250px;
 }
 
 form {
-    margin-top: 120px;
+    margin-top: 90px;
     text-align: left;
-    margin-left: 1vw;
+    margin-left: 5vw;
 }
 
-.form-group {
-    margin-bottom: 10px;
-}
 
 label {
     display: block; 
@@ -62,7 +69,8 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 98px;
+    margin-left: 105px;
+    margin-top: 10px;
 }
 
 button:hover {
@@ -71,7 +79,7 @@ button:hover {
 
 .chart {
     position: absolute;
-    top: 110px; 
+    top: 92px; 
     right: 20px; 
     width: 300px;
     height: 100%;
@@ -81,7 +89,7 @@ button:hover {
 }
 .response {
     text-align: center;
-    margin-top: -110px;
+    margin-top: -135px;
     font-size: 20px;
     line-height: 1.5;
     font-weight: 400;
