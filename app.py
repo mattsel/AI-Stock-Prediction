@@ -13,7 +13,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 # Create a Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 app.config['MONGO_URI_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')

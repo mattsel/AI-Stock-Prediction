@@ -1,0 +1,1 @@
+web: gunicorn gunicorn_entry_point:app
