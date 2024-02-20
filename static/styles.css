@@ -52,6 +52,10 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
+.response {
+    max-height: 300px;
+    overflow-y: auto;
+}
 
 .response2 {
     max-height: 300px;
