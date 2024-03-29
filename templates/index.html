@@ -22,11 +22,13 @@
             and low prices to predict closing prices. Results are visualized with Plotly, providing an 
             interactive display of actual versus predicted values.</p>
     </div>
+
     <div class='form'>
         <form method="post" action="/">
             <div class="form-group">
                 <label for="stock_symbol">Enter Ticker Symbol:</label>
-                <input type="text" id="stock_symbol" name="stock_symbol" required>
+                <input type="text" id="stock_symbol" name="stock_symbol" list="stock_symbols" required>
+                <datalist id="stock_symbols"></datalist>
             </div>
 
             <div class="form-group">
@@ -35,30 +37,6 @@
         </form>
     </div>   
 
-    <div class="response2">
-        <p1><b>S&P 500:</b></p1>
-        <p> CMCSA, AAPL, MSFT, AMZN, GOOGL, GOOG, FB, TSLA, BRK.B, JNJ, JPM, V, PG, NFLX, GS, DIS, CSCO, IBM, VZ, NVDA, XOM, ABBV, ADBE, ACN, AEP, AES, AFL, AIG, AIV, AIZ, 
-            AJG, ALL, ALK, ALLE, ALXN, AMCR, AMD, AME, AMGN, AMP, AMT, AMZN, ANET, ANSS, AON, AOS, APA, APD, APH, APTV, ARE, ALGN, ALV, AMAT, APTV, ADM, ANET, AJG, 
-            AIZ, TFC, TDG, TRV, TSCO, TROW, TRV, TSN, TT, TWTR, TXT, TYL, UAL, UDR, UHS, ULTA, UNH, UNM, UNP, UPS, URI, USB, V, VLO, VMC, VNO, VRSK, VRSN, VRTX, VTR, 
-            VTRS, VZ, WAB, WAT, WBA, WDC, WEC, WELL, WFC, WHR, WLTW, WM, WMB, WMT, WRB, WRK, WST, WU, WY, WYNN, XEL, XLNX, XOM, XRAY, XRX, XYL, YUM, ZBH, ZBRA, ZION, 
-            ZTS, ADI, ADSK, AEE, AEP, AES, AFL, AIG, AIZ, AJG, ALL, ALXN, AMAT, AMCR, AMD, AME, AMGN, AMP, AMT, AMZN, ANET, ANSS, AON, AOS, APA, APD, APH, APTV, ARE, 
-            ALGN, ALLE, LNT, AON, APA, AAP, AAL, AOS, APA, AMAT, ADM, ANET, AJG, AIZ, ATO, ADI, ADP, AZO, AVB, AVGO, AVY, AYI, AZO, BAC, BAX, BBY, BDX, BEN, BF.B, BIIB,
-            BIO, BK, BKNG, BKR, BLK, BLL, BMY, BR, BRK.B, BSX, BWA, BXP, C, CAG, CAH, CARR, CAT, CB, CBOE, CBRE, CCI, CMI, CMS, CNC, CNP, COF, COG, COO, COP, COST, 
-            COTY, CPB, CPRI, CPRT, CRM, CSCO, CSX, CTAS, CTLT, CTSH, CTVA, CTL, CUBE, CCI, CMI, CVS, CVX, CWK, CXO, D, DAL, DD, DE, DFS, DG, DGX, DHI, DHR, DIS, DISCA, 
-            DISCK, DISH, DLR, DLTR, DOV, DOW, DPZ, DRE, DRI, DTE, DUK, DVA, DVN, DXC, DXCM, EA, EBAY, ECL, ED, EFTR, EFX, EIX, EL, EMN, EMR, ENPH, EOG, EQIX, EQR, ERIE, 
-            ESS, ETFC, ETN, ETSY, EVRG, EW, EXC, EXPD, EXPE, EXPD, EXR, F, FANG, FAST, FB, FBHS, FCX, FDX, FE, FFIV, FIS, FISV, FITB, FLS, FLT, FMC, FOX, FOXA, FRC, FRT, 
-            FTI, FTNT, FTV, GD, GE, GILD, GIS, GL, GLW, GM, GOOGL, GPC, GPN, GPS, GRMN, GS, GWW, HAL, HAS, HBAN, HBI, HCA, HD, HES, HFC, HIG, HII, HLT, HOLX, HON, HPE,
-            HPQ, HRL, HSIC, HST, HSY, HUM, HWM, IBM, ICE, IDXX, IEX, IFF, ILMN, INCY, INTC, INGR, INTU, IP, IPG, IPGP, IQV, IR, IRM, ISRG, IT, ITW, IVZ, J, JBHT, JCI, 
-            JKHY, JNJ, JNPR, JPM, K, KEYS, KHC, KIM, KLAC, KMB, KMI, KMX, KO, KR, KSS, KSU, L, LB, LDOS, LEG, LEN, LH, LHX, LIN, LKQ, LLY, LMT, LNC, LNT, LOW, LRCX, LUV,
-            LW, LYB, M, MA, MAA, MAC, MAR, MAS, MCD, MCHP, MCK, MCO, MDLZ, MDT, MET, MGM, MHK, MKC, MKTX, MLM, MMC, MMM, MNST, MO, MOS, MPC, MRK, MRO, MS, MSCI, MSFT,
-            MSI, MTB, MTD, MU, MXIM, MYL, NBL, NCLH, NDAQ, NEE, NEM, NFLX, NI, NKE, NLOK, NLSN, NOC, NOV, NOW, NRG, NSC, NTAP, NTRS, NUE, NVDA, NVR, NWL, NWS, NWSA,
-            O, ODFL, OKE, OMC, ORCL, ORLY, OTIS, OXY, PAYC, PAYX, PBCT, PCAR, PEAK, PEG, PEP, PFE, PFG, PG, PGR, PH, PHM, PKG, PKI, PLD, PM, PNC, PNR, PNW, PPG, PPL, 
-            PRGO, PRU, PSA, PSX, PVH, PWR, PXD, PYPL, QCOM, QRVO, RCL, RE, REG, REGN, RF, RHI, RJF, RL, RMD, ROK, ROL, ROP, ROST, RSG, RTX, SBAC, SBUX, SCHW, SEE,
-            SHW, SIVB, SJM, SLB, SNA, SNPS, SO, SPG, SPGI, SPLK, SPY, SRE, STI, STT, STX, STZ, SWK, SWKS, SYF, SYK, SYY, T, TAP, TDG, TEL, TER, TFC, TGT, TIF, TMO, 
-            TMUS, TPX, TRMB, TROW, TRV, TSCO, TSN, TT, TWTR, TXT, TYL, UAL, UDR, UHS, ULTA, UNH, UNM, UNP, UPS, URI, USB, V, VFC, VIAC, VLO, VMC, VNO, VRSK, VRSN, 
-            VRTX, VTR, VTRS, VZ, WAB, WAT, WBA, WDC, WEC, WELL, WFC, WHR, WLTW, WM, WMB, WMT, WRB, WRK, WST, WU, WY, WYNN, XEL, XLNX, XOM, XRAY, XRX, XYL, YUM, ZBH,
-            ZBRA, ZION, ZTS.
-</p>
-    </div>
+    <script src="../static/recommendation.js"></script>
 </body>
 </html>

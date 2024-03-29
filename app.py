@@ -1,4 +1,5 @@
 import os
+import random
 import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
@@ -93,8 +94,9 @@ def result(stock_symbol):
     plot_div = fig.to_html(full_html=False)
 
     result_html = result_df.head().to_html()
-
-    return render_template('result.html', result_html=result_html, plot_div=plot_div, mse=mse, selected_stock=stock_symbol)
+    
+    return render_template('result.html', result_html=result_html, plot_div=plot_div,
+                           mse=mse, selected_stock=stock_symbol)
 
 if __name__ == '__main__':
     app.run(debug=True)
