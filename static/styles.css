@@ -23,6 +23,7 @@ body {
     text-decoration: none;
     color: #fff;
 }
+
 .navbar a p {
     text-decoration: underline;
 }
@@ -37,9 +38,10 @@ body {
 }
 
 .navbar a:last-child {
-    margin-left: 1250px;
-
+    margin-left: auto;
+    margin-right: 50px;
 }
+
 
 .response,
 .response2 {
