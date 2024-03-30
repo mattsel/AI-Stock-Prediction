@@ -37,6 +37,12 @@
         </form>
     </div>   
 
+    {% if error_message %}
+        <div class="alert" role="alert">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
     <script src="../static/recommendation.js"></script>
 </body>
 </html>
