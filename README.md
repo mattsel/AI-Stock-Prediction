@@ -15,4 +15,4 @@ After allowing the program to both train and predict the values of the stock, th
 <img width="777" alt="Screenshot 2024-05-04 at 8 05 53 PM" src="https://github.com/mattsel/AI-Stock-Prediction/assets/141775337/4888a55f-a41a-42a3-afe1-342e30aeb42a">
 
 With this addition, not only is the data displayed from the predicted values, but also the actual values of the stock's performance during this time. 
-This is important because it allows the user to visualize the data, which they can also use the Mean Square Error of the stocks prediction to justify this regression models accuracy.
+This is important because it allows the user to visualize the data, and they can also use the Mean Square Error of the stock prediction to justify this regression model's accuracy.
