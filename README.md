@@ -8,7 +8,7 @@ My primary motivation for this project was to get a look into the realm of Artif
 Starting, the user can enter a stock's ticker symbol as input, which is then searched for using the use of dictionaries and queries. 
 <img width="370" alt="Screenshot 2024-05-04 at 7 57 50 PM" src="https://github.com/mattsel/AI-Stock-Prediction/assets/141775337/9b6c8532-3aac-4a0b-b08f-f4d6fd1f4b10">
 
-Following this, the program will that utilize the data collected from the S&P 500 Index to split the data for training vs testing with about an 80% ratio. 
+Following this, the program will that utilize the data collected from the S&P 500 Index to split the data for training vs testing with an 80% ratio. 
 <img width="485" alt="Screenshot 2024-05-04 at 8 00 38 PM" src="https://github.com/mattsel/AI-Stock-Prediction/assets/141775337/a1547261-de56-48c3-8606-eca9c18e003a">
 
 After allowing the program to both train and predict the values of the stock, the data is then aggregated to be visualized using plotly.
