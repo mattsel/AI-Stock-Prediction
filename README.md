@@ -36,14 +36,6 @@ Once the data model has been split into a 20:80 ratio for training and testing d
 Following the creation of the Linear Regression instance, the program will then pass through the features train and target train to create a prediction about the data.
 
 ```python
-       # Calculate the split date based on the 80% mark
-        split_index = int(0.8 * len(stock_data))
-        split_date = stock_data.iloc[split_index]['date']
-
-        # Split the data into training and testing sets based on date
-        train_data = stock_data[stock_data['date'] < split_date]
-        test_data = stock_data[stock_data['date'] >= split_date]
-
         # Features and target for training set
         features_train = train_data[['open', 'high', 'low']]
         target_train = train_data['close']
