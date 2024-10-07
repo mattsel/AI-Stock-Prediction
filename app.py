@@ -1,4 +1,5 @@
 import os
+import os
 import random
 import pandas as pd
 from dotenv import load_dotenv
@@ -23,17 +24,18 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 mongo = PyMongo(app)
 
 # Create a MongoDB client
-client = MongoClient(app.config['MONGO_URI'])
-db = client.get_database('AI-Prediction-Database')
-collection = db['Stock-Collection']
+db = mongo.db
 
 # Function to fetch historical stock data for a given symbol from MongoDB
 def get_stock_data_from_mongodb(symbol):
-    query = {'Name': symbol}
-    stock_data = list(collection.find(query))
-    stock_df = pd.DataFrame(stock_data)
-    return stock_df
-
+    try:
+        stock_data = list(db[symbol].find())  # Access the collection using the symbol as the name to avoid large querey
+        stock_df = pd.DataFrame(stock_data)
+        return stock_df
+    except Exception as e:
+        print(f"Error accessing collection for {symbol}: {e}")
+        return pd.DataFrame()
+    
 @app.route('/', methods=['GET', 'POST'])
 def index():
     error_message = None
