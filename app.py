@@ -1,41 +1,57 @@
 import os
-import os
 import random
 import pandas as pd
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_pymongo import PyMongo, MongoClient
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import plotly.express as px
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 
-# Load environment variables from a .env file
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-
-# Create a Flask app
 app = Flask(__name__, static_url_path='/static')
-app.config['MONGO_URI'] = os.getenv('MONGO_URI')
-app.config['MONGO_URI_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+load_dotenv()
 
-# Initialize PyMongo with Flask
-mongo = PyMongo(app)
+# Load the stock data from CSV
+df = pd.read_csv('s&p_5years.csv')
+df['Date'] = pd.to_datetime(df['Date'])
 
-# Create a MongoDB client
-db = mongo.db
+# Endpoint to get all stock data
+@app.route('/api/stocks', methods=['GET'])
+def get_all_data():
+    data = df.to_dict(orient='records')
+    return jsonify(data)
 
-# Function to fetch historical stock data for a given symbol from MongoDB
-def get_stock_data_from_mongodb(symbol):
-    try:
-        stock_data = list(db[symbol].find())  # Access the collection using the symbol as the name to avoid large querey
-        stock_df = pd.DataFrame(stock_data)
-        return stock_df
-    except Exception as e:
-        print(f"Error accessing collection for {symbol}: {e}")
-        return pd.DataFrame()
+# Endpoint to filter by date
+@app.route('/api/stocks/date', methods=['GET'])
+def get_data_by_date():
+    date = request.args.get('date')
+    if date:
+        filtered_data = df[df['Date'] == date].to_dict(orient='records')
+        if filtered_data:
+            return jsonify(filtered_data)
+        else:
+            return jsonify({'error': 'No data for this date'})
+    else:
+        return jsonify({'error': 'Date parameter is missing'})
+
+# Endpoint to get data through a range
+@app.route('/api/stocks/range', methods=['GET'])
+def get_data_by_date_range():
+    start_date = request.args.get('start')
+    end_date = request.args.get('end')
     
+    if start_date and end_date:
+        filtered_data = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)].to_dict(orient='records')
+        if filtered_data:
+            return jsonify(filtered_data)
+        else:
+            return jsonify({'error': 'No data for this date range'})
+    else:
+        return jsonify({'error': 'Start or end date parameter is missing'})
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     error_message = None
@@ -43,14 +59,10 @@ def index():
     if request.method == 'POST':
         # Handle form submission and redirect to the result page
         selected_stock = request.form['stock_symbol']
-        try:
-            # Check if the entered stock symbol is valid
-            stock_data = get_stock_data_from_mongodb(selected_stock)
-        except Exception as e:
-            error_message = "Invalid stock symbol entered. Please try again."
-            return render_template('index.html', error_message=error_message)
-        else:
+        if selected_stock in df['Name'].values:  # Check if the entered stock symbol is valid
             return redirect(url_for('result', stock_symbol=selected_stock))
+        else:
+            error_message = "Invalid stock symbol entered. Please try again."
 
     return render_template('index.html', error_message=error_message)
 
@@ -61,28 +73,27 @@ def result(stock_symbol):
     mse = None
 
     try:
-        # Fetch historical stock data for the selected stock symbol from MongoDB
-        stock_data = get_stock_data_from_mongodb(stock_symbol)
+        # Fetch historical stock data for the selected stock symbol from the DataFrame
+        stock_data = df[df['Name'] == stock_symbol]
 
         # Set Date to Datetime and sort values
-        stock_data['date'] = pd.to_datetime(stock_data['date'])
-        stock_data = stock_data.sort_values(by='date')
+        stock_data = stock_data.sort_values(by='Date')
 
         # Calculate the split date based on the 80% mark
         split_index = int(0.8 * len(stock_data))
-        split_date = stock_data.iloc[split_index]['date']
+        split_date = stock_data.iloc[split_index]['Date']
 
         # Split the data into training and testing sets based on date
-        train_data = stock_data[stock_data['date'] < split_date]
-        test_data = stock_data[stock_data['date'] >= split_date]
+        train_data = stock_data[stock_data['Date'] < split_date]
+        test_data = stock_data[stock_data['Date'] >= split_date]
 
         # Features and target for training set
-        features_train = train_data[['open', 'high', 'low']]
-        target_train = train_data['close']
+        features_train = train_data[['Open', 'High', 'Low']]
+        target_train = train_data['Close']
 
         # Features and target for testing set
-        features_test = test_data[['open', 'high', 'low']]
-        target_test = test_data['close']
+        features_test = test_data[['Open', 'High', 'Low']]
+        target_test = test_data['Close']
 
         # Train a simple linear regression model
         model = LinearRegression()
@@ -99,10 +110,10 @@ def result(stock_symbol):
         result_df = pd.DataFrame({'Actual': target_test, 'Predicted': predictions})
 
         # Convert the numeric date values to datetime for visualization
-        result_df['date'] = test_data['date'].values
+        result_df['Date'] = test_data['Date'].values
 
         # Plot the actual vs. predicted values with Plotly
-        fig = px.line(result_df, x='date', y=['Actual', 'Predicted'], labels={'Value': 'Stock Price'})
+        fig = px.line(result_df, x='Date', y=['Actual', 'Predicted'], labels={'Value': 'Stock Price'})
         plot_div = fig.to_html(full_html=False)
 
         result_html = result_df.head().to_html()
