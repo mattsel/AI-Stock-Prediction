@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_caching import Cache
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 import plotly.express as px
 import redis
 
@@ -33,12 +33,9 @@ except redis.ConnectionError as e:
 def get_all_data():
     try:
         data = cache.get('all_stock_data')
-
         if data is None:
             data = df.to_dict(orient='records')
             cache.set('all_stock_data', data, timeout=300)
-            print("Data cached for the first time.")
-
         return jsonify(data)
     except Exception as e:
         print(f"Error caching data: {e}")
@@ -113,7 +110,7 @@ def result(stock_symbol):
 
         # Predictions and evaluation
         predictions = model.predict(features_test)
-        mse = mean_squared_error(target_test, predictions)
+        mse = mean_absolute_error(target_test, predictions)
 
         result_df = pd.DataFrame({'Actual': target_test, 'Predicted': predictions})
         result_df['Date'] = test_data['Date'].values
