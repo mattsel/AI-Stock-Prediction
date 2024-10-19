@@ -17,7 +17,7 @@ app.config['CACHE_TYPE'] = 'RedisCache'
 app.config['CACHE_REDIS_URL'] = os.getenv('REDIS_URL')
 cache = Cache(app)
 
-df = pd.read_csv('s&p_5years.csv')
+df = pd.read_csv('data/sp_5years.csv')
 df['Date'] = pd.to_datetime(df['Date'])
 
 # Check Redis connection
