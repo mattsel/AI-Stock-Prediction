@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: flask-app
@@ -20,16 +20,14 @@ spec:
         env:
         - name: REDIS_HOST
           value: "my-redis"
----
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: flask-app
   ports:
     - port: 5000
       targetPort: 5000
-      nodePort: 30001
