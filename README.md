@@ -72,5 +72,5 @@ the more accurate the stock prediction is because of the minimal error involved 
         plot_div = fig.to_html(full_html=False)
 ```
 
-**Thanks for checking our my AI Stock Prediction Program**
+**Thanks for checking out my AI Stock Prediction Program**
 
