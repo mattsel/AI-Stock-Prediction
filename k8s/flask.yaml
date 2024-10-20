@@ -14,12 +14,14 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: mattsel/ai-stock-prediction:latest
+        image: ai-stock-prediction:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
         env:
         - name: REDIS_HOST
-          value: "my-redis"
+          value: "redis-service"
+---
 apiVersion: v1
 kind: Service
 metadata:
