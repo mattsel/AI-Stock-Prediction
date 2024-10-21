@@ -6,10 +6,17 @@ import redis.asyncio as redis
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 import plotly.express as px
+from flask_mail import Mail, Message
 from prometheus_client import Counter, Gauge, Histogram, generate_latest, CollectorRegistry
 
 # Initialize Quart app
 app = Quart(__name__, static_url_path='/static')
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('EMAIL_ADDRESS')
+app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('EMAIL_ADDRESS')
 
 # Configure caching
 app.config['CACHE_TYPE'] = 'RedisCache'
@@ -153,8 +160,26 @@ async def result(stock_symbol):
 
 @app.route('/health', methods=['GET'])
 async def health_check():
-    health_check_gauge.set(1)
-    return jsonify({"status": "healthy"}), 200
+    try:
+        client = await get_redis_client()
+        await client.ping()
+
+        health_check_gauge.set(1)
+        status = {"status": "healthy"}
+
+    except Exception as e:
+        health_check_gauge.set(0)
+        status = {"status": "unhealthy", "error": str(e)}
+        with app.app_context():
+            msg = Message(
+                subject="Health Check Failed!",
+                recipients=[os.getenv('ALERT_EMAIL_ADDRESS')],
+                body=f"Alert: The health check has failed with error: {str(e)}. Immediate attention is required!"
+            )
+            await Mail.send(msg)
+    finally:
+        await client.aclose()
+    return jsonify(status), 200 if health_check_gauge._value.get() == 1 else 500
 
 @app.route('/metrics', methods=['GET'])
 async def metrics():
