@@ -1,1 +1,1 @@
-web: gunicorn gunicorn_entry_point:app
+web: hypercorn hypercorn_entry_point:app
