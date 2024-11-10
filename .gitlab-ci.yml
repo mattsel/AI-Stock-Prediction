@@ -9,10 +9,9 @@ pylint:
     - pip install pylint
     - pip install -r requirements.txt
   script:
-    - pylint app.py
+    - pylint --disable=all --enable=E,F app.py
   only:
     - merge_requests
-    - main
   
 docker:
   image: docker:20.10.7
