@@ -1,23 +1,24 @@
 {
   "compilerOptions": {
-    "target": "es6",                   // Target modern JavaScript
-    "module": "commonjs",              // Module system (you can use "esnext" or other options based on your project)
-    "strict": true,                    // Enable strict type checking
-    "jsx": "react",                    // Enable JSX support for React (also works with React 17+)
-    "esModuleInterop": true,           // Allows default imports for CommonJS modules
-    "skipLibCheck": true,              // Skip type checking of declaration files for faster compilation
-    "forceConsistentCasingInFileNames": true, // Ensures consistent casing of file names
-    "outDir": "./dist",                // Output directory for compiled JavaScript
-    "rootDir": "./src",                // Root directory for TypeScript files
-    "resolveJsonModule": true,         // Allows importing JSON files as modules
-    "moduleResolution": "node"         // Use Node.js-style module resolution
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
   },
   "include": [
-    "src/**/*.ts",                     // Include all TypeScript files
-    "src/**/*.tsx"                     // Include TypeScript JSX (TSX) files
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "declarations/declarations.d.ts"
   ],
   "exclude": [
-    "node_modules",                    // Exclude node_modules directory
-    "dist"                             // Exclude output directory
+    "node_modules",
+    "dist"
   ]
 }

@@ -1,23 +1,14 @@
 import React from 'react';
-import './App.css';
-
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { StockForm } from './components/StockForm';
+import { StockResult } from './components/ResultForm';
 export const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" Component={StockForm} />
+        <Route path="/result/:stockSymbol" Component={StockResult} />
+      </Routes>
+    </Router>
   );
-}
+};

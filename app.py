@@ -10,11 +10,13 @@ from prometheus_client import Counter, Histogram, generate_latest, CollectorRegi
 from redis import Redis
 import pickle
 import zlib
+from flask_cors import CORS
 
 app = Flask(__name__, static_url_path='/static')
+CORS(app)
 
-redis = Redis.from_url(os.getenv("REDIS_URL"), ssl_cert_reqs=None)
-MONGODB_CONNECTION_STRING = os.getenv('CONNECTION_STRING')
+# redis = Redis.from_url(os.getenv("REDIS_URL"), ssl_cert_reqs=None)
+MONGODB_CONNECTION_STRING = "mongodb+srv://mattsel04:Nicholas092004@ai-stock-cluster.o8bln.mongodb.net/"
 mongo_client = MongoClient(MONGODB_CONNECTION_STRING)
 mongo_db = mongo_client['SP500_Stocks']
 
@@ -25,20 +27,21 @@ latency_histogram = Histogram('http_request_latency_seconds', 'Histogram of HTTP
 
 def fetch_data_from_mongodb(stock_symbol):
     try:
-        cached_data = redis.get(stock_symbol)
-        if cached_data:
-            df = pickle.loads(zlib.decompress(cached_data))
-            return df
-        else:
-            collection = mongo_db[stock_symbol]
-            cursor = collection.find()
-            df = pd.DataFrame(list(cursor))
-            if not df.empty:
-                compressed_df = zlib.compress(pickle.dumps(df))
-                redis.setex(stock_symbol, 60, compressed_df)
-            else:
-                print("No data found")
-            return df
+    #  cached_data = redis.get(stock_symbol)
+#      if cached_data:
+#          df = pickle.loads(zlib.decompress(cached_data))
+#           return df
+#       else:
+        collection = mongo_db[stock_symbol]
+        cursor = collection.find()
+        df = pd.DataFrame(list(cursor))
+        print(df.head())
+#         if not df.empty:
+#              compressed_df = zlib.compress(pickle.dumps(df))
+#             redis.setex(stock_symbol, 60, compressed_df)
+#         else:
+#            print("No data found")
+        return df
     except Exception as e:
         print(e)
 
@@ -54,61 +57,43 @@ def after_request(response):
     latency_histogram.labels(method=request.method, endpoint=request.path).observe(latency)
     return response
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    error_counter.labels(method=request.method, endpoint=request.path).inc()
-    return jsonify({"error": "An error occurred"}), 500
-
 @app.route('/api/result', methods=['POST'])
 def result():
-    stock_symbol = request.get_json().get("stock_symbol", None)
-    result_html = None
-    plot_div = None
-    mse = None
+    stock_symbol = request.get_json().get("stock_symbol")
+    stock_data = fetch_data_from_mongodb(stock_symbol)
 
-    try:
-        stock_data = fetch_data_from_mongodb(stock_symbol)
+    stock_data['Date'] = pd.to_datetime(stock_data['Date'])
+    stock_data = stock_data.sort_values(by='Date')
 
-        if stock_data.empty:
-            return jsonify({"error": "An error occurred"})
+    split_index = int(0.8 * len(stock_data))
+    split_date = stock_data.iloc[split_index]['Date']
 
-        stock_data['Date'] = pd.to_datetime(stock_data['Date'])
-        stock_data = stock_data.sort_values(by='Date')
+    train_data = stock_data[stock_data['Date'] < split_date]
+    test_data = stock_data[stock_data['Date'] >= split_date]
 
-        split_index = int(0.8 * len(stock_data))
-        split_date = stock_data.iloc[split_index]['Date']
+    features_train = train_data[['Open', 'High', 'Low']]
+    target_train = train_data['Close']
+    features_test = test_data[['Open', 'High', 'Low']]
+    target_test = test_data['Close']
 
-        train_data = stock_data[stock_data['Date'] < split_date]
-        test_data = stock_data[stock_data['Date'] >= split_date]
+    model = LinearRegression()
+    model.fit(features_train, target_train)
 
-        features_train = train_data[['Open', 'High', 'Low']]
-        target_train = train_data['Close']
-        features_test = test_data[['Open', 'High', 'Low']]
-        target_test = test_data['Close']
+    predictions = model.predict(features_test)
+    mse = mean_absolute_error(target_test, predictions)
+    result_df = pd.DataFrame({'Date': test_data['Date'].values, 'Actual': target_test, 'Predicted': predictions})
 
-        model = LinearRegression()
-        model.fit(features_train, target_train)
+    fig = px.line(result_df, x='Date', y=['Actual', 'Predicted'], 
+                    labels={'value': 'Stock Price', 'variable': 'Price Type'},
+                    title=f'Stock Price Prediction for {stock_symbol}')
+    plot_div = fig.to_html(full_html=False)
 
-        predictions = model.predict(features_test)
-        mse = mean_absolute_error(target_test, predictions)
-        result_df = pd.DataFrame({'Date': test_data['Date'].values, 'Actual': target_test, 'Predicted': predictions})
-
-        fig = px.line(result_df, x='Date', y=['Actual', 'Predicted'], 
-                      labels={'value': 'Stock Price', 'variable': 'Price Type'},
-                      title=f'Stock Price Prediction for {stock_symbol}')
-        plot_div = fig.to_html(full_html=False)
-
-        result_html = result_df[['Date', 'Actual', 'Predicted']].head().to_html(index=False)
-
-    except Exception as e:
-        print(f"Error in result function: {e}")
-        return jsonify({"error": "An error occurred"})
-
+    result_html = result_df[['Date', 'Actual', 'Predicted']].head().to_html(index=False)
     return jsonify({
-        'result_html': result_html,
-        'plot_div': plot_div,
-        'mse': mse,
-        'selected_stock': stock_symbol
+        "stock_symbol": stock_symbol,
+        "result_html": result_html,
+        "plot_div": plot_div,
+        "mse": mse
     })
 
 @app.route('/health', methods=['GET'])
