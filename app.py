@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path='/static')
 CORS(app)
 
 # redis = Redis.from_url(os.getenv("REDIS_URL"), ssl_cert_reqs=None)
-MONGODB_CONNECTION_STRING = "mongodb+srv://mattsel04:Nicholas092004@ai-stock-cluster.o8bln.mongodb.net/"
+
 mongo_client = MongoClient(MONGODB_CONNECTION_STRING)
 mongo_db = mongo_client['SP500_Stocks']
 
