@@ -96,7 +96,7 @@ def result():
         "mse": mse
     })
 
-@app.route('/health', methods=['GET'])
+@app.route('/api//health', methods=['GET'])
 def health_check():
     status = {"status": "healthy"}
     try:
@@ -106,7 +106,14 @@ def health_check():
 
     return jsonify(status), 200 if 'mongodb' not in status else 500
 
-@app.route('/metrics', methods=['GET'])
+@app.route('/api/stocks/all', methods=['GET'])
+def all_stocks():
+        return jsonify(mongo_db.list_collection_names())
+    
+
+
+
+@app.route('/api/metrics', methods=['GET'])
 def metrics():
     return generate_latest(registry), 200, {'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'}
 
