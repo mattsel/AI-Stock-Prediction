@@ -34,7 +34,6 @@ body {
 
 .navbar a:hover {
   color: #ccc;
-  text-decoration: underline;
 }
 
 .navbar a:last-child {
@@ -86,20 +85,37 @@ input {
   color: #ffffff;
 }
 
-button {
+.button {
   padding: 10px 20px;
-  background-color: #3c56fd;
+  background-color: #404040;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #404040;
+}
+
+.submitButton {
+  padding: 10px 20px;
+  background-color: #1d5dff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 20px;
+  margin-right: 10px;
 }
 
-button:hover {
-  background-color: #2a3bbf;
+.submitButton:hover {
+  background-color: #1d5dff87;
 }
+
+
 .alert {
   font-size: 18px;
   text-align: center;

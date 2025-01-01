@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { PrimaryButton } from '@fluentui/react';
-import { Error } from './Error'; // Import the Error component
+import { Button } from '@fluentui/react-components';
+import { Error } from './Error';
 
 export const Form: React.FC = () => {
   const [stockName, setStockName] = useState('');
@@ -91,7 +91,9 @@ export const Form: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <PrimaryButton text="Submit" type="submit" />
+          <Button appearance="subtle" size="small" className="submitButton">
+            Repository
+          </Button>
         </div>
       </form>
       <Error errorMessage={errorMessage} />
