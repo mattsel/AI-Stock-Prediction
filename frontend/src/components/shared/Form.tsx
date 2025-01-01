@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { PrimaryButton } from '@fluentui/react';
+import { Error } from './Error'; // Import the Error component
 
-interface FormProps {
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-}
-
-export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
+export const Form: React.FC = () => {
   const [stockName, setStockName] = useState('');
   const [stockNamesList, setStockNamesList] = useState<string[]>([]);
   const [filteredNames, setFilteredNames] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +19,9 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
         setFilteredNames(response.data.slice(0, 4)); 
       })
       .catch((error) => {
-        console.error('Error fetching stock names:', error);
         setErrorMessage('Failed to load stock names. Please try again.');
       });
-  }, [setErrorMessage]);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,6 +53,7 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
       setErrorMessage('Stock name cannot be empty.');
       return;
     }
+
     try {
       const response = await fetch('http://localhost:5000/api/result', {
         method: 'POST',
@@ -76,8 +75,6 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
     }
   };
 
-  const shouldShowDatalist = filteredNames.length > 1 || (filteredNames.length === 1 && filteredNames[0].toLowerCase() !== stockName.toLowerCase());
-
   return (
     <div className="form">
       <form onSubmit={handleFormSubmit}>
@@ -89,22 +86,15 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
             name="stock_name"
             value={stockName}
             onChange={handleSearchInput}
-            list={shouldShowDatalist ? "stock_names" : undefined}
             required
           />
-          {shouldShowDatalist && (
-            <datalist id="stock_names">
-              {filteredNames.map((stock, index) => (
-                <option key={index} value={stock} />
-              ))}
-            </datalist>
-          )}
         </div>
 
         <div className="form-group">
-          <button type="submit">Predict</button>
+          <PrimaryButton text="Submit" type="submit" />
         </div>
       </form>
+      <Error errorMessage={errorMessage} />
     </div>
   );
 };

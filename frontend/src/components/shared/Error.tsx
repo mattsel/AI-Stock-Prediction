@@ -1,14 +1,26 @@
-/* Will Be a Toast*/
-import React from 'react';
+import React, { useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 
 type Props = {
   errorMessage: string;
 };
 
 export const Error: React.FC<Props> = ({ errorMessage }) => {
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  }, [errorMessage]);
+
   return (
-    <div className="alert alert-danger" role="alert">
-      {errorMessage}
+    <div>
+      <ToastContainer />
     </div>
   );
 };
