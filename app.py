@@ -15,8 +15,8 @@ from flask_cors import CORS
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
 
-# redis = Redis.from_url(os.getenv("REDIS_URL"), ssl_cert_reqs=None)
-
+redis = Redis.from_url(os.getenv("REDIS_URL"), ssl_cert_reqs=None)
+MONGODB_CONNECTION_STRING = os.getenv('CONNECTION_STRING')
 mongo_client = MongoClient(MONGODB_CONNECTION_STRING)
 mongo_db = mongo_client['SP500_Stocks']
 
@@ -25,23 +25,22 @@ request_counter = Counter('http_requests_total', 'Total number of HTTP requests'
 error_counter = Counter('http_errors_total', 'Total number of HTTP errors', ['method', 'endpoint'], registry=registry)
 latency_histogram = Histogram('http_request_latency_seconds', 'Histogram of HTTP request latency', ['method', 'endpoint'], registry=registry)
 
-def fetch_data_from_mongodb(stock_symbol):
+async def fetch_data_from_mongodb(stock_symbol):
     try:
-    #  cached_data = redis.get(stock_symbol)
-#      if cached_data:
-#          df = pickle.loads(zlib.decompress(cached_data))
-#           return df
-#       else:
-        collection = mongo_db[stock_symbol]
-        cursor = collection.find()
-        df = pd.DataFrame(list(cursor))
-        print(df.head())
-#         if not df.empty:
-#              compressed_df = zlib.compress(pickle.dumps(df))
-#             redis.setex(stock_symbol, 60, compressed_df)
-#         else:
-#            print("No data found")
-        return df
+        cached_data = await redis.get(stock_symbol)
+        if cached_data:
+            df = pickle.loads(zlib.decompress(cached_data))
+            return df
+        else:
+            collection = mongo_db[stock_symbol]
+            cursor = collection.find()
+            df = pd.DataFrame(list(cursor))
+            if not df.empty:
+                compressed_df = zlib.compress(pickle.dumps(df))
+                await redis.setex(stock_symbol, 60, compressed_df)
+            else:
+                print("No data found")
+            return df
     except Exception as e:
         print(e)
 

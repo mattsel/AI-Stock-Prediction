@@ -10,6 +10,7 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
   const [stockName, setStockName] = useState('');
   const [stockNamesList, setStockNamesList] = useState<string[]>([]);
   const [filteredNames, setFilteredNames] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,14 +25,26 @@ export const Form: React.FC<FormProps> = ({ setErrorMessage }) => {
       });
   }, [setErrorMessage]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(stockName);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [stockName]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filteredData = stockNamesList.filter(item =>
+        item.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredNames(filteredData.slice(0, 4));
+    }
+  }, [searchTerm, stockNamesList]);
+
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value;
     setStockName(searchTerm);
-    
-    const filteredData = stockNamesList.filter(item =>
-      item.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredNames(filteredData.slice(0, 4));
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
