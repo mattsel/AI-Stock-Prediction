@@ -12,8 +12,9 @@ export const Form: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
+  const apiHost = process.env.FLASK_BACKEND_URL || 'http://localhost:5000';
   useEffect(() => {
-    axios.get('http://localhost:5000/api/stocks/all')
+    axios.get(`${apiHost}/api/stocks/all`)
       .then((response) => {
         setStockNamesList(response.data);
         setFilteredNames(response.data.slice(0, 4)); 
@@ -55,7 +56,7 @@ export const Form: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/result', {
+      const response = await fetch(`${apiHost}/api/result`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
