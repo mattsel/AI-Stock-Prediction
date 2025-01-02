@@ -46,18 +46,18 @@ async def fetch_data_from_mongodb(stock_symbol):
 
 
 @app.before_request
-def before_request():
+async def before_request():
     request.start_time = time.time()
 
 @app.after_request
-def after_request(response):
+async def after_request(response):
     request_counter.labels(method=request.method, endpoint=request.path).inc()
     latency = time.time() - request.start_time
     latency_histogram.labels(method=request.method, endpoint=request.path).observe(latency)
     return response
 
 @app.route('/api/result', methods=['POST'])
-def result():
+async def result():
     stock_symbol = request.get_json().get("stock_symbol")
     stock_data = fetch_data_from_mongodb(stock_symbol)
 
@@ -77,7 +77,6 @@ def result():
 
     model = LinearRegression()
     model.fit(features_train, target_train)
-
     predictions = model.predict(features_test)
     mse = mean_absolute_error(target_test, predictions)
     result_df = pd.DataFrame({'Date': test_data['Date'].values, 'Actual': target_test, 'Predicted': predictions})
@@ -96,7 +95,7 @@ def result():
     })
 
 @app.route('/api//health', methods=['GET'])
-def health_check():
+async def health_check():
     status = {"status": "healthy"}
     try:
         mongo_client.server_info()
@@ -106,14 +105,11 @@ def health_check():
     return jsonify(status), 200 if 'mongodb' not in status else 500
 
 @app.route('/api/stocks/all', methods=['GET'])
-def all_stocks():
+async def all_stocks():
         return jsonify(mongo_db.list_collection_names())
-    
-
-
 
 @app.route('/api/metrics', methods=['GET'])
-def metrics():
+async def metrics():
     return generate_latest(registry), 200, {'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'}
 
 if __name__ == '__main__':

@@ -1,76 +1,134 @@
 # AI-Stock-Prediction
 
-Within this program, the user can select a stock with an interactive interface and be presented with a stock prediction using a linear regression model. 
-This program's data is held and maintained using MongoDB to sort collections and stock data.
-This program was built using the following technologies: Python, MongoDB, Sklearn, Pandas, and Plotly.
-My primary motivation for this project was to get a look into the realm of Artificial Intelligence as well as the use of non-relational databases.
+- [Backend](#backend)
+- [Frontend](#frontend)
+- [Monitoring](#monitoring)
+- [Kubernetes](#kubernetes)
 
-To start, the application was defined with a function to handle stock data queries using with the help of the python library, PyMongo.
 
-```python
-# Function to fetch historical stock data for a given symbol from MongoDB
-def get_stock_data_from_mongodb(symbol):
-    query = {'Name': symbol}
-    stock_data = list(collection.find(query))
-    stock_df = pd.DataFrame(stock_data)
-    return stock_df
+## Backend
+
+Hello, this project was created to practice my programming skills and further explore the architecture involved with developing a full stack application.
+To get started, we can start by taking a look into the backend of this application which was developed using a combination of Python and Flask to make a awesome asynchronous API.
+This backend utilizes a combination of MongoDB and Redis for persisting data in which the sklearn Linear Regression model can use of learning.
+
+Essential when a user submits a POST request to `/api/result/` with the stock symbol they are quering about, the program will start by first fetching this stocks data from MongoDB.
+If the data was recently queried, this function will first check Redis for the dataframe to increase response times, but if the dataframe is not in redis, it will pull this data from MongoDB using the stock symbol as
+it's collection name.
+```python 
+async def fetch_data_from_mongodb(stock_symbol):
+    try:
+        cached_data = await redis.get(stock_symbol)
+        if cached_data:
+            df = pickle.loads(zlib.decompress(cached_data))
+            return df
+        else:
+            collection = mongo_db[stock_symbol]
+            cursor = collection.find()
+            df = pd.DataFrame(list(cursor))
+            if not df.empty:
+                compressed_df = zlib.compress(pickle.dumps(df))
+                await redis.setex(stock_symbol, 60, compressed_df)
+            else:
+                print("No data found")
+            return df
+    except Exception as e:
+        print(e)
 ```
 
-After the user has made a query on a stock ticker symbol, the program will then utilize the data collected from the S&P 500 Index to split the data for training vs testing with an 80% ratio. 
-
+After getting the data frame for the stock's symbol, the program will then begin processesing this data by splitting it into training and testing data. The split for these data types is 80% Testing & 20% Training.
 ```python
-        # Set Date to Datetime and sort values
-        stock_data['date'] = pd.to_datetime(stock_data['date'])
-        stock_data = stock_data.sort_values(by='date')
+split_index = int(0.8 * len(stock_data))
+    split_date = stock_data.iloc[split_index]['Date']
 
-        # Calculate the split date based on the 80% mark
-        split_index = int(0.8 * len(stock_data))
-        split_date = stock_data.iloc[split_index]['date']
+    train_data = stock_data[stock_data['Date'] < split_date]
+    test_data = stock_data[stock_data['Date'] >= split_date]
 
-        # Split the data into training and testing sets based on date
-        train_data = stock_data[stock_data['date'] < split_date]
-        test_data = stock_data[stock_data['date'] >= split_date]
+    features_train = train_data[['Open', 'High', 'Low']]
+    target_train = train_data['Close']
+    features_test = test_data[['Open', 'High', 'Low']]
+    target_test = test_data['Close']
 ```
 
-Once the data model has been split into a 20:80 ratio for training and testing data, the program will then create a LinearRegression instance with the help of sklearn, a Python artificial intelligence library.
-Following the creation of the Linear Regression instance, the program will then pass through the features train and target train to create a prediction about the data.
-
+The last stop for this AI generated data predictions is to actual create and train the model. This has been made simple using the sklearn Linear Regression algorithm
 ```python
-        # Features and target for training set
-        features_train = train_data[['open', 'high', 'low']]
-        target_train = train_data['close']
-
-        # Features and target for testing set
-        features_test = test_data[['open', 'high', 'low']]
-        target_test = test_data['close']
-
-        # Train a simple linear regression model
-        model = LinearRegression()
-        model.fit(features_train, target_train)
-
-        # Make predictions on the test set
-        predictions = model.predict(features_test)
+model = LinearRegression()
+    model.fit(features_train, target_train)
+    predictions = model.predict(features_test)
+    mse = mean_absolute_error(target_test, predictions)
 ```
 
-In order to justify the program's stock prediction, there must be some data visualization and statistical values to support the program hypothesis. To do this,
-the program will then calculate the mean square error using sklearn's metrics library. This value will help to support that our program stock prediction is accurate. Essentially the lower the mean square error,
-the more accurate the stock prediction is because of the minimal error involved in the predictions. Then both of the predicted and actual values are ploted to a chart to help visualize the data's accuracy
+There are two important calculations made from the model, `predictions` & `mse`. The predictions is the calculations of the stocks data points that was trained using the previous data. MSE stands for
+Mean Squared Error, in short calculate the average error produced by this algorthims calculations. This is important in determining the algorithms accuracy as a high MSE, would result in an inaccurately
+produced prediction.
 
-```python
-# Evaluate the model
-        mse = mean_squared_error(target_test, predictions)
-        print(f"Mean Squared Error: {mse}")
+## Frontend
 
-        # Create a DataFrame for actual and predicted values
-        result_df = pd.DataFrame({'Actual': target_test, 'Predicted': predictions})
-
-        # Convert the numeric date values to datetime for visualization
-        result_df['date'] = test_data['date'].values
-
-        # Plot the actual vs. predicted values with Plotly
-        fig = px.line(result_df, x='date', y=['Actual', 'Predicted'], labels={'Value': 'Stock Price'})
-        plot_div = fig.to_html(full_html=False)
+This frontend description will focus mainly on the different ways in which the Typescript React application interacts with the Async API. For starters, the application begins by making a query to the API's
+`/api/stocks/all` endpoint, which returns a list of each of the available stocks to predict. 
+```typescript
+const apiHost = process.env.FLASK_BACKEND_URL || 'http://localhost:5000';
+  useEffect(() => {
+    axios.get(`${apiHost}/api/stocks/all`)
+      .then((response) => {
+        setStockNamesList(response.data);
+        setFilteredNames(response.data.slice(0, 4)); 
+      })
+      .catch((error) => {
+        setErrorMessage('Failed to load stock names. Please try again.');
+      });
+  }, []);
 ```
 
-**Thanks for checking our my AI Stock Prediction Program**
+After retrieving this data, the application will then fulfill the input form to provide a user with unique suggestions for stock selections as they type.
+```typescript
+useEffect(() => {
+    if (searchTerm) {
+      const filteredData = stockNamesList.filter(item =>
+        item.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredNames(filteredData.slice(0, 4));
+    }
+  }, [searchTerm, stockNamesList]);
+```
+
+Upon submission of a valid stock symbol, the frontend applicaiton will then send a POST request with the selected symbol's name to the `/api/result` endpoint to process this data.
+As a response to this POST request, the frontend will recieve a json payload with the dataframes information to display. 
+
+<FINISH>
+
+## Monitoring
+There has been actions taken throughout this application to help with basic web application monitoring. In order to achieve this, I utilized the open source Prometheus package. This monitoring
+library as it allows users to develop custom metrics such as Counters, Gauges, Histograms, and Summaries. I was able to utilize these metric types in the API to track the following metrics.
+```python
+registry = CollectorRegistry()
+request_counter = Counter('http_requests_total', 'Total number of HTTP requests', ['method', 'endpoint'], registry=registry)
+error_counter = Counter('http_errors_total', 'Total number of HTTP errors', ['method', 'endpoint'], registry=registry)
+latency_histogram = Histogram('http_request_latency_seconds', 'Histogram of HTTP request latency', ['method', 'endpoint'], registry=registry)
+```
+
+I was able to utilize these different metrics to count the number of requests, errors, and latency times for requests. Prometheus is unique in the aspect in which it will post these metrics to an http endpoint which
+can later be scraped to visualize. These metrics are posted to the `/api/metrics` as seen below:
+```python
+@app.route('/api/metrics', methods=['GET'])
+async def metrics():
+    return generate_latest(registry), 200, {'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'}
+```
+
+Prometheus has an interesting way of gathering the data that is posted to your endpoint. Within the Prometheus application, you can add various configuration files that will scrape this data.
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'flask-app'
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets: ['<IP>:<PORT>']
+
+```
+
+Prometheus will then scrape this data and store it in a time series database which can be queried and viewed using either Prometheus' UI or other tools like Grafana.
+
+## Kubernetes
 
