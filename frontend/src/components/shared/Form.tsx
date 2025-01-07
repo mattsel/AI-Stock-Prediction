@@ -8,16 +8,16 @@ export const Form: React.FC = () => {
   const [stockName, setStockName] = useState('');
   const [stockNamesList, setStockNamesList] = useState<string[]>([]);
   const [filteredNames, setFilteredNames] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const apiHost = process.env.FLASK_BACKEND_URL || 'http://localhost:5000';
+
   useEffect(() => {
     axios.get(`${apiHost}/api/stocks/all`)
       .then((response) => {
         setStockNamesList(response.data);
-        setFilteredNames(response.data.slice(0, 4)); 
+        setFilteredNames(response.data.slice(0, 4));
       })
       .catch((error) => {
         setErrorMessage('Failed to load stock names. Please try again.');
@@ -26,24 +26,25 @@ export const Form: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setSearchTerm(stockName);
+      setStockName(stockName);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [stockName]);
 
   useEffect(() => {
-    if (searchTerm) {
+    if (stockName) {
       const filteredData = stockNamesList.filter(item =>
-        item.toLowerCase().includes(searchTerm.toLowerCase())
+        item.toLowerCase().includes(stockName.toLowerCase())
       );
       setFilteredNames(filteredData.slice(0, 4));
+    } else {
+      setFilteredNames(stockNamesList.slice(0, 4));
     }
-  }, [searchTerm, stockNamesList]);
+  }, [stockName, stockNamesList]);
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value;
-    setStockName(searchTerm);
+    setStockName(e.target.value);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -81,19 +82,32 @@ export const Form: React.FC = () => {
       <form onSubmit={handleFormSubmit}>
         <div className="form-group">
           <label htmlFor="stock_name">Enter Stock Name:</label>
+          
           <input
             type="text"
             id="stock_name"
             name="stock_name"
             value={stockName}
             onChange={handleSearchInput}
+            list="stock-suggestions"
             required
           />
+          
+          <datalist id="stock-suggestions">
+            {filteredNames.map((name, index) => (
+              <option key={index} value={name} />
+            ))}
+          </datalist>
         </div>
 
-        <div className="form-group">
-          <Button appearance="subtle" size="small" className="submitButton">
-            Repository
+        <div className="form-group" id="submit-button">
+          <Button
+            appearance="subtle"
+            size="small"
+            className="submitButton"
+            type="submit"
+          >
+            Calculate
           </Button>
         </div>
       </form>
