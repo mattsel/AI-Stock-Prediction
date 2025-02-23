@@ -5,7 +5,7 @@ import { Button } from '@fluentui/react-components';
 export const Navbar: React.FC = () => {
 
   return (
-    <div className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+    <div className="navbar" style={{ justifyContent: 'space-between' }}>
       <a href="/">
         <h1>AI Stock Predictions</h1>
       </a>
