@@ -93,9 +93,7 @@ useEffect(() => {
 ```
 
 Upon submission of a valid stock symbol, the frontend applicaiton will then send a POST request with the selected symbol's name to the `/api/result` endpoint to process this data.
-As a response to this POST request, the frontend will recieve a json payload with the dataframes information to display. 
-
-<FINISH>
+As a response to this POST request, the frontend will recieve a json payload with the dataframes information to display.
 
 ## Monitoring
 There has been actions taken throughout this application to help with basic web application monitoring. In order to achieve this, I utilized the open source Prometheus package. This monitoring
@@ -132,3 +130,16 @@ Prometheus will then scrape this data and store it in a time series database whi
 
 ## Kubernetes
 
+Each part of this application are built into docker images and deployed into Kubernetes to help with scalability and redundancy. There are multiple components involved that help to make this work.
+The fronend and backend of this application are deployed as `Loadbalancers` in order to help this application scale.
+
+Some of the other components that are deployed with this applicaiton are `Grafana`, `Redis`, and `Prometheus`. Grafana has been deployed in the Kube space to allow for better visualization of the monitoring of this application.
+The Redis cluster has been deployed using Kubernetes so that I can take advantage of the Bitnami Redis helm chart. This helm chart makes it easy for us to scale our redis instances and to have communication.
+
+#### Cluster Level
+
+![Kubernetes Cluser](images/Cluster.png)
+
+#### Pod Level
+
+![alt text](images/Pod.png)

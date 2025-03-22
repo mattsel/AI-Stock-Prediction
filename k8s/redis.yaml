@@ -1,11 +1,9 @@
-# Redis Cluster configuration
 cluster:
-  enabled: true  # Enable Redis Cluster mode
+  enabled: true
   nodeGroup: primary
-  replicas: 3  # Number of Redis replicas (not including master)
-  shardCount: 3  # Number of shards in the Redis Cluster
+  replicas: 3
+  shardCount: 3
 
-# Redis configuration (Master node config)
 redis:
   master:
     persistence:
