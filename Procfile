@@ -1,1 +1,0 @@
-web: hypercorn hypercorn_entry_point:app

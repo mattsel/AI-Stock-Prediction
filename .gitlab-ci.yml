@@ -7,13 +7,24 @@ pylint:
   stage: lint
   before_script:
     - pip install pylint
-    - pip install -r requirements.txt
+    - pip install -r backend/requirements.txt
   script:
-    - pylint --disable=all --enable=E,F app.py
+    - pylint --disable=all --enable=E,F backend/app.py
   only:
     - merge_requests
-  
-docker:
+
+eslint:
+  image: node:16
+  stage: lint
+  before_script:
+    - npm install -g eslint
+    - npm install
+  script:
+    - eslint frontend/**/*.ts --fix
+  only:
+    - merge_requests
+
+docker_backend:
   image: docker:20.10.7
   stage: build
   services:
@@ -21,10 +32,26 @@ docker:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
-        - app.py
+        - backend/**/*
   before_script:
     - docker info
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
-    - docker build -t mattsel/AI-Stock-Prediction-web:latest .
-    - docker push mattsel/AI-Stock-Prediction-web:latest
+    - docker build -t mattsel/AI-Stock-Prediction-web-backend:latest ./backend
+    - docker push mattsel/AI-Stock-Prediction-web-backend:latest
+
+docker_frontend:
+  image: docker:20.10.7
+  stage: build
+  services:
+    - docker:19.03.12-dind
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - frontend/**/*
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  script:
+    - docker build -t mattsel/AI-Stock-Prediction-web-frontend:latest ./frontend
+    - docker push mattsel/AI-Stock-Prediction-web-frontend:latest
